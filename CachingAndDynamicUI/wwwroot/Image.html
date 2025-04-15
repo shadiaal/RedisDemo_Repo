@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lazy Loading Images</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .spacer {
+            height: 200px;
+        }
+
+        .image-container {
+            margin-bottom: 40px;
+        }
+
+        img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            display: block;
+            margin: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 style="text-align: center;">Lazy Loading Images Demo</h1>
+    <div id="gallery"></div>
+
+    <script>
+       
+        const images = [
+            { id: 1015, alt: "Random Image 1" },
+            { id: 1025, alt: "Random Image 2" },
+            { id: 1035, alt: "Random Image 3" }
+        ];
+
+        const gallery = document.getElementById("gallery");
+
+        
+        images.forEach(img => {
+            const container = document.createElement("div");
+            container.className = "image-container";
+
+            container.innerHTML = `
+                        <div class="spacer"></div>
+                        <h2>${img.alt}</h2>
+                        <img
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                            data-src="https://picsum.photos/id/${img.id}/600/400"
+                            alt="${img.alt}"
+                            class="lazy"
+                        />
+                    `;
+
+            gallery.appendChild(container);
+        });
+
+        // Lazy loading 
+        function initLazyLoading() {
+            let lazyImages = [].slice.call(document.querySelectorAll("img.lazy"));
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let img = entry.target;
+                            img.src = img.dataset.src;
+                            img.classList.remove("lazy");
+                            observer.unobserve(img);
+                        }
+                    });
+                });
+
+                lazyImages.forEach(function (img) {
+                    observer.observe(img);
+                });
+            } else {
+                lazyImages.forEach(function (img) {
+                    img.src = img.dataset.src;
+                });
+            }
+        }
+
+        
+        initLazyLoading();
+    </script>
+
+</body>
+</html>

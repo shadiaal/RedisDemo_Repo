@@ -1,0 +1,86 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fetch User Info</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        #userInfo {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #loading {
+            font-style: italic;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Fetch User Info</h1>
+
+    <label for="userId">Enter User ID:</label>
+    <input type="number" id="userId" min="1" max="10" />
+
+    <button onclick="fetchUser()">Get User</button>
+
+    <div id="userInfo"></div>
+
+    <script>
+        // Get ?cache=redis or memory from the URL
+        function getCacheTypeFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get("cache") || "memory"; // default to memory if not specified
+        }
+
+        async function fetchUser() {
+            const userId = document.getElementById('userId').value;
+            const userInfoDiv = document.getElementById('userInfo');
+            const cacheType = getCacheTypeFromUrl();
+
+            if (!userId) {
+                userInfoDiv.innerHTML = "<p>Please enter a valid user ID.</p>";
+                return;
+            }
+
+            userInfoDiv.innerHTML = "<p id='loading'>Loading...</p>";
+
+            // Decide API based on cache type
+            const apiUrl = cacheType === "redis"
+                ? `https://localhost:7135/api/User/${userId}`
+                : `https://localhost:7135/api/UserMemory/${userId}`;
+
+            try {
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    userInfoDiv.innerHTML = "<p>User not found.</p>";
+                    return;
+                }
+
+                const data = await response.json();
+
+                userInfoDiv.innerHTML = `
+                        <h3>User Info (Cache: ${cacheType.toUpperCase()}):</h3>
+                        <p><strong>ID:</strong> ${data.id}</p>
+                        <p><strong>Name:</strong> ${data.name}</p>
+                        <p><strong>Username:</strong> ${data.username}</p>
+                        <p><strong>Email:</strong> ${data.email}</p>
+                    `;
+            } catch (error) {
+                userInfoDiv.innerHTML = "<p>Error fetching user.</p>";
+                console.error(error);
+            }
+        }
+    </script>
+
+</body>
+</html>

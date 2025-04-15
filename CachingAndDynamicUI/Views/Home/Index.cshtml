@@ -1,0 +1,38 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Choose Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            text-align: center;
+        }
+
+        button {
+            margin: 10px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Choose Page</h1>
+
+    <div class="container">
+        <button onclick="window.location.href='User.html?cache=memory'">View from Memory Cache</button>
+        <button onclick="window.location.href='User.html?cache=redis'">View from Redis Cache</button>
+        <button onclick="window.location.href='Image.html'">View from (Lazy Loading)</button>
+    </div>
+
+</body>
+</html>
